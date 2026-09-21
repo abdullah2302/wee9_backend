@@ -18,18 +18,23 @@ await connectDB();
 
 const app = express();
 
-app.use(morgan("dev"));
+
 
 // CORS: the React app runs on a different origin (e.g. localhost:5173)
 // than this API (e.g. localhost:5000) — without this, the browser blocks
 // every request from the frontend.
+
+const allowedOrigins = [
+  process.env.CLIENT_ORIGIN
+];
 app.use(
     cors({
-        origin: process.env.CLIENT_ORIGIN,
+        origin: allowedOrigins,
         credentials: true,
     })
 );
 app.use(express.json());
+app.use(morgan("dev"));
 
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
@@ -43,5 +48,5 @@ app.use("/api/notifications", notificationRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT ;
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
