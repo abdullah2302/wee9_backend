@@ -18,23 +18,20 @@ await connectDB();
 
 const app = express();
 
-
+app.use(morgan("dev"));
 
 // CORS: the React app runs on a different origin (e.g. localhost:5173)
 // than this API (e.g. localhost:5000) — without this, the browser blocks
 // every request from the frontend.
 
-const allowedOrigins = [
-  process.env.CLIENT_ORIGIN
-];
+
 app.use(
     cors({
-        origin: allowedOrigins,
+        origin: process.env.CLIENT_ORIGIN,
         credentials: true,
     })
 );
 app.use(express.json());
-app.use(morgan("dev"));
 
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 

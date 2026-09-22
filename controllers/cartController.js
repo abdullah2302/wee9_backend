@@ -1,6 +1,5 @@
 import Cart from "../models/Cart.js";
 
-// All routes here are protected — req.user is always set.
 
 // @route GET /api/cart
 export async function getCart(req, res, next) {

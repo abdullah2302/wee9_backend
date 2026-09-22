@@ -13,35 +13,36 @@ export async function getProducts(req, res, next) {
         const match = {};
 
         if (search) {
-            match.name = { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
+        
+            match.$text = { $search: search };
         }
 
         if (category && category !== "All") {
             match.category = category;
         }
 
-        const [result] = await Product.aggregate([
-            { $match: match },
-            {
-                $facet: {
-                    products: [
-                        { $sort: { createdAt: -1 } },
-                        { $skip: (page - 1) * limit },
-                        { $limit: limit },
-                    ],
-                    metadata: [{ $count: "total" }],
-                    categories: [
-                        { $sort: { category: 1 } },
-                        { $group: { _id: "$category" } },
-                    ],
+
+        const [categories, [result]] = await Promise.all([
+            Product.distinct("category"),
+            Product.aggregate([
+                { $match: match },
+                {
+                    $facet: {
+                        products: [
+                            { $sort: { createdAt: -1 } },
+                            { $skip: (page - 1) * limit },
+                            { $limit: limit },
+                        ],
+                        metadata: [{ $count: "total" }],
+                    },
                 },
-            },
+            ]),
         ]);
 
         const total = result.metadata[0]?.total || 0;
         res.json({
             products: result.products,
-            categories: result.categories.map(({ _id }) => _id),
+            categories: categories.sort(),
             pagination: {
                 page,
                 limit,
