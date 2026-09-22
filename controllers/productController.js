@@ -72,7 +72,7 @@ export async function getProductById(req, res, next) {
 // @route POST /api/products  (protected)
 export async function createProduct(req, res, next) {
     try {
-        const { name, category, price, description, image, inStock } = req.body;
+        const { name, category, price, description, image, inStock, stockQuantity } = req.body;
 
         if (!name || !category || price === undefined) {
             res.status(400);
@@ -86,6 +86,7 @@ export async function createProduct(req, res, next) {
             description,
             image,
             inStock,
+            stockQuantity,
         });
 
         res.status(201).json(product);
@@ -110,10 +111,10 @@ export async function deleteProduct(req, res, next) {
 
 export async function updateProduct(req, res, next) {
     try {
-        const { name, category, price, description, image, inStock } = req.body;
+        const { name, category, price, description, image, inStock, stockQuantity } = req.body;
         const product = await Product.findByIdAndUpdate(
             req.params.id,
-            { name, category, price, description, image, inStock },
+            { name, category, price, description, image, inStock, stockQuantity },
             { new: true, runValidators: true }
         );
 

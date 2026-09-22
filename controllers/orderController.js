@@ -3,8 +3,6 @@ import Order from "../models/Order.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
 
-
-
 export const createOrder = async (req, res) => {
     try {
         if (req.user.role === "admin") {
