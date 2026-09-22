@@ -107,3 +107,23 @@ export async function deleteProduct(req, res, next) {
         next(err);
     }
 }
+
+export async function updateProduct(req, res, next) {
+    try {
+        const { name, category, price, description, image, inStock } = req.body;
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            { name, category, price, description, image, inStock },
+            { new: true, runValidators: true }
+        );
+
+        if (!product) {
+            res.status(404);
+            throw new Error("Product not found");
+        }
+
+        res.json(product);
+    } catch (err) {
+        next(err);
+    }
+}
