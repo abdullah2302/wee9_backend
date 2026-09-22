@@ -35,3 +35,16 @@ export async function markNotificationRead(req, res, next) {
         next(error);
     }
 }
+
+export async function markAllNotificationsRead(req, res, next) {
+    try {
+        await Notification.updateMany(
+            { recipient: req.user._id, read: false },
+            { read: true }
+        );
+
+        res.json({ message: "All notifications marked as read" });
+    } catch (error) {
+        next(error);
+    }
+}
