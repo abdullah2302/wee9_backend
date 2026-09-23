@@ -29,17 +29,14 @@ const app = express();
 // than this API (e.g. localhost:5000) — without this, the browser blocks
 // every request from the frontend.
 
-const allowedOrigins = (process.env.CLIENT_ORIGINS || process.env.CLIENT_ORIGIN || "")
-  .split(",")
-  .map((origin) => origin.trim().replace(/\/$/, ""))
-  .filter(Boolean);
-
-const corsOptions = {
-  origin: allowedOrigins,
-  credentials: true,
-};
+const allowedOrigins = [
+  process.env.CLIENT_ORIGIN,
+];
 app.use(
-  cors(corsOptions)
+    cors({
+        origin: allowedOrigins,
+        credentials: true,
+    })
 );
 app.use(express.json());
 app.use(morgan("dev"));
@@ -63,7 +60,10 @@ app.use(errorHandler);
 const PORT = process.env.PORT ;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: corsOptions,
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
 });
 
 configureSocket(io);
