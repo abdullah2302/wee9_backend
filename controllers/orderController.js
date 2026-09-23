@@ -2,6 +2,7 @@
 import Order from "../models/Order.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
+import { emitNotification } from "../socket.js";
 
 export const createOrder = async (req, res) => {
     try {
@@ -43,7 +44,7 @@ export const createOrder = async (req, res) => {
         });
 
         const admins = await User.find({ role: "admin" }).select("_id");
-        await Notification.insertMany(
+        const notifications = await Notification.insertMany(
             admins.map((admin) => ({
                 recipient: admin._id,
                 type: "new_order",
@@ -51,6 +52,7 @@ export const createOrder = async (req, res) => {
                 order: order._id,
             }))
         );
+        notifications.forEach(emitNotification);
 
         res.status(201).json({
             message: "Order placed successfully",
@@ -176,12 +178,13 @@ export const updateOrderStatus = async (req, res) => {
             });
         }
 
-        await Notification.create({
+        const notification = await Notification.create({
             recipient: order.user._id,
             type: "order_status",
             message: `Order #${order._id.toString().slice(-8)} is now ${status}`,
             order: order._id,
         });
+        emitNotification(notification);
 
         res.status(200).json({
             message: "Order status updated successfully",
