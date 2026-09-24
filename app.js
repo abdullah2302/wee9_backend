@@ -15,6 +15,7 @@ import wishlistRoutes from "./routes/wishlistRoute.js";
 import orderRoutes from "./routes/orderRoute.js";
 import notificationRoutes from "./routes/notificationRoute.js";
 import chatRoutes from "./routes/chatRoute.js";
+import reviewRoutes from "./routes/reviewRoute.js";
 
 import morgan from "morgan";
 
@@ -53,6 +54,7 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
