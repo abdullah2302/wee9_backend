@@ -13,6 +13,11 @@ export async function signup(req, res, next) {
             throw new Error("Name, email and password are all required");
         }
 
+        if (password.length < 6) {
+            res.status(400);
+            throw new Error("Password must be at least 6 characters");
+        }
+
         const existing = await User.findOne({ email });
         if (existing) {
             res.status(409);
@@ -43,6 +48,11 @@ export async function signup(req, res, next) {
 export async function login(req, res, next) {
     try {
         const { email, password } = req.body;
+
+        if (!email || !password) {
+            res.status(400);
+            throw new Error("Email and password are required");
+        }
 
         const user = await User.findOne({ email });
         if (!user || !(await user.matchPassword(password))) {
